@@ -1,0 +1,128 @@
+# Fault Agent Configuration
+# Deployed at: /usr/src/fault-agent/config.yaml
+agent:
+  hostname: "claw"                            # auto-detect if empty
+  sysinfo: "192.168.8.21"                             # custom string tag, passed through to report
+  tags: {}                                # custom kv string dict, passed through to report
+  spool_dir: /var/spool/fault-agent
+  state_dir: /var/lib/fault-agent
+
+server:
+  url: https://noc.ustc.edu.cn/api/v1/reports
+  timeout_seconds: 30
+  retry_max_seconds: 300
+  tls_verify: true
+  bearer_token_path: ""                   # empty = no auth
+
+checks:
+  disk_usage:
+    enabled: true
+    warning_pct: 85
+    critical_pct: 95
+    exclude_fstypes:
+      - tmpfs
+      - devtmpfs
+      - squashfs
+      - overlay
+      - efivarfs
+    exclude_mounts:
+      - /boot
+      - /boot/efi
+
+  inode_usage:
+    enabled: true
+    warning_pct: 80
+    critical_pct: 90
+
+  disk_io_errors:
+    enabled: true
+
+  memory_usage:
+    enabled: true
+    warning_pct: 90
+    critical_pct: 95
+
+  oom_killer:
+    enabled: true
+    window_seconds: 300
+
+  swap_thrashing:
+    enabled: true
+    warning_usage_pct: 50
+    critical_usage_pct: 80
+    warning_pages_per_sec: 100
+    critical_pages_per_sec: 1000
+
+  cpu_load:
+    enabled: true
+    warning_load_per_cpu: 2.0
+    critical_load_per_cpu: 5.0
+
+  zombie_processes:
+    enabled: true
+    warning_count: 1
+    critical_count: 10
+
+  systemd_failures:
+    enabled: true
+
+  network_connectivity:
+    enabled: true
+    targets:
+      - host: 1.1.1.1
+        method: tcp
+        port: 443
+
+  dns_resolution:
+    enabled: true
+    targets: []
+
+  port_exhaustion:
+    enabled: true
+    warning_pct: 60
+    critical_pct: 80
+
+  conntrack_saturation:
+    enabled: true
+    warning_pct: 60
+    critical_pct: 80
+
+  file_descriptors:
+    enabled: true
+    warning_pct: 60
+    critical_pct: 80
+
+  time_sync:
+    enabled: true
+    warning_drift_seconds: 0.1
+    critical_drift_seconds: 5.0
+
+  certificate_expiry:
+    enabled: true
+    warning_days: 30
+    critical_days: 7
+    search_paths:
+      - /etc/ssl/certs
+      - /etc/pki/tls/certs
+    max_files: 100
+    timeout_seconds: 10
+
+  read_only_fs:
+    enabled: true
+
+  nfs_mounts:
+    enabled: true
+    timeout_seconds: 5
+
+  firewall_errors:
+    enabled: true
+
+  kernel_messages:
+    enabled: true
+    max_lines: 5
+
+  raid_lvm:
+    enabled: true
+
+logging:
+  level: info
