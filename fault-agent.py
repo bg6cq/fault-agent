@@ -1553,7 +1553,7 @@ def send_report(report, config):
                         log.warning("cannot read token from %s: %s", token_path, e)
 
                 sock.sendall(req_headers.encode("utf-8") + b"\r\n" + payload)
-                response = sock.recv(4096).decode("utf-8", errors="replace")
+                response = sock.recv(4096).decode("utf-8", "replace")
                 status_line = response.split("\r\n")[0] if response else ""
                 parts = status_line.split()
                 code = int(parts[1]) if len(parts) > 1 else 0
