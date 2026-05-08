@@ -69,7 +69,7 @@ checks:
   network_connectivity:
     enabled: true
     targets:
-      - host: 1.1.1.1
+      - host: 202.38.64.40
         method: tcp
         port: 443
 
@@ -98,7 +98,7 @@ checks:
     critical_drift_seconds: 5.0
 
   certificate_expiry:
-    enabled: true
+    enabled: false
     warning_days: 30
     critical_days: 7
     search_paths:
@@ -115,7 +115,7 @@ checks:
     timeout_seconds: 5
 
   firewall_errors:
-    enabled: true
+    enabled: false
 
   kernel_messages:
     enabled: true
