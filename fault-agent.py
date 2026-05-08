@@ -1524,6 +1524,9 @@ def send_report(report, config):
         host = host_port
         port = 443 if is_https else 80
 
+    payload = json.dumps(report, indent=2).encode("utf-8")
+    log.info("posting report to %s", url)
+
     for attempt in range(6):
         try:
             ctx, ctx_ok = _create_ssl_context(tls_verify)
