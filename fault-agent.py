@@ -835,7 +835,7 @@ def dns_resolution(cfg):
         tr = {"target": target}
         start = _monotonic()
         try:
-            socket.getaddrinfo(target, 80, socket.SOCK_STREAM)
+            socket.getaddrinfo(target, 80)
             elapsed = _monotonic() - start
             tr["success"] = True
             tr["time_seconds"] = round(elapsed, 3)
