@@ -1476,6 +1476,26 @@ def build_report(config, results):
 # HTTP Reporter
 # ---------------------------------------------------------------------------
 
+def _create_ssl_context(tls_verify=True):
+    """Create SSL context. Compatible with older Python 2.7 (< 2.7.9)."""
+    try:
+        ctx = ssl.create_default_context()
+        if not tls_verify:
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+        return ctx, True
+    except AttributeError:
+        return None, False
+
+
+def _wrap_socket(sock, host, ctx, ctx_ok):
+    """Wrap socket with SSL. Compatible with older Python 2.7."""
+    if ctx_ok:
+        return ctx.wrap_socket(sock, server_hostname=host)
+    else:
+        return ssl.wrap_socket(sock)
+
+
 def send_report(report, config):
     """Send report to central server. Returns True on success."""
     server_cfg = config.get("server", {})
@@ -1503,25 +1523,6 @@ def send_report(report, config):
     else:
         host = host_port
         port = 443 if is_https else 80
-
-    def _create_ssl_context(tls_verify=True):
-    """Create SSL context. Compatible with older Python 2.7 (< 2.7.9)."""
-    try:
-        ctx = ssl.create_default_context()
-        if not tls_verify:
-            ctx.check_hostname = False
-            ctx.verify_mode = ssl.CERT_NONE
-        return ctx, True
-    except AttributeError:
-        return None, False
-
-
-def _wrap_socket(sock, host, ctx, ctx_ok):
-    """Wrap socket with SSL. Compatible with older Python 2.7."""
-    if ctx_ok:
-        return ctx.wrap_socket(sock, server_hostname=host)
-    else:
-        return ssl.wrap_socket(sock)
 
     for attempt in range(6):
         try:
