@@ -524,7 +524,11 @@ def memory_usage(cfg):
         return [error_result("memory_usage", str(e))]
 
     total = meminfo.get("MemTotal", 0)
-    available = meminfo.get("MemAvailable", 0)
+    available = meminfo.get("MemAvailable")
+    if available is None:
+        available = (meminfo.get("MemFree", 0)
+                     + meminfo.get("Buffers", 0)
+                     + meminfo.get("Cached", 0))
     if total == 0:
         return [error_result("memory_usage", "cannot read MemTotal")]
 
