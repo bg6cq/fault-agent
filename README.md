@@ -2,12 +2,12 @@
 
 Linux 主机故障监控 Agent，定期检查系统故障状态并上报到集中服务器。支持 JSON 和 YAML 两种配置文件格式。
 
-如果数据送到 https://noc.ustc.edu.cn/api/v1/reports，并设置了GID(注意要设置为工号、学号，即登录时右上角显示的)，可以登录到 https://noc.ustc.edu.cn/linux 查看
+如果数据送到 https://noc.ustc.edu.cn/api/v1/reports ，并设置了GID(注意要设置为工号、学号，即登录时右上角显示的)，可以登录到 https://noc.ustc.edu.cn/linux 查看
 
 
 ## USTC 校内使用
 
-每台服务器上，/usr/src 目录下，
+每台服务器上，
 ```
 cd /usr/src
 git clone https://git.ustc.edu.cn/ustcnic/fault-agent.git
@@ -32,7 +32,12 @@ cp config.yaml.sample config.yaml
 vi config.yaml # 修改 hostname、sysinfo、url
 python /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.yaml --oneshot
 ```
-如果正常，参考crontab.txt
+
+后面的参数 --oneshot 的含义是运行并将输出显示，并未发给收集服务器。
+
+如果发给收集服务器，请不带 --oneshot 参数再运行。
+
+如果正常，参考crontab.txt，根据自己的配置文件修改，设置
 ```
 crontab -e 改为定期运行
 ```
