@@ -2,6 +2,9 @@
 
 Linux 主机故障监控 Agent，定期检查系统故障状态并上报到集中服务器。
 
+如果数据送到 https://noc.ustc.edu.cn/api/v1/reports，并设置了GID，可以登录到 https://noc.ustc.edu.cn/linux 查看
+
+
 ## 目录结构
 
 ```

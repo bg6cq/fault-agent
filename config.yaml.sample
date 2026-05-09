@@ -1,9 +1,9 @@
 # Fault Agent Configuration
 # Deployed at: /usr/src/fault-agent/config.yaml
 agent:
-  hostname: "claw"                            # auto-detect if empty
-  sysinfo: "192.168.8.21"                             # custom string tag, passed through to report
-  tags: {}                                # custom kv string dict, passed through to report
+  hostname: "claw"                            # 为空自动探测
+  sysinfo: "192.168.8.21"                     # 直接显示
+  tags: {"GID": "XXXXX,YYYYY" }               # 限制谁可以在 https://noc.ustc.edu.cn/linux 看到, XXXX是工号或学号
   spool_dir: /var/spool/fault-agent
   state_dir: /var/lib/fault-agent
 

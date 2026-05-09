@@ -3,7 +3,7 @@
   "agent": {
     "hostname": "claw",
     "sysinfo": "192.168.8.21",
-    "tags": {},
+    "tags": { "GID": "XXXXX,YYYYY" },
     "spool_dir": "/var/spool/fault-agent",
     "state_dir": "/var/lib/fault-agent"
   },
