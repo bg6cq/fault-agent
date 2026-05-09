@@ -336,7 +336,7 @@ def _default_config():
             "state_dir": DEFAULT_STATE_DIR,
         },
         "server": {
-            "url": "http://localhost:8000/api/v1/reports",
+            "url": "https://noc.ustc.edu.cn/api/v1/reports",
             "timeout_seconds": 30,
             "retry_max_seconds": 300,
             "tls_verify": True,

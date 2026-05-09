@@ -34,7 +34,7 @@
       "critical_pages_per_sec": 1000
     },
     "cpu_load": { "enabled": true, "warning_load_per_cpu": 2.0, "critical_load_per_cpu": 5.0 },
-    "zombie_processes": { "enabled": true, "warning_count": 1, "critical_count": 10 },
+    "zombie_processes": { "enabled": true, "warning_count": 2, "critical_count": 10 },
     "systemd_failures": { "enabled": true },
     "network_connectivity": {
       "enabled": true,

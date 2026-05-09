@@ -60,7 +60,7 @@ checks:
 
   zombie_processes:
     enabled: true
-    warning_count: 1
+    warning_count: 2
     critical_count: 10
 
   systemd_failures:
