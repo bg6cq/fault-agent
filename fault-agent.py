@@ -1351,6 +1351,32 @@ def raid_lvm(cfg):
     return results
 
 
+@register_check
+def suspicious_files(cfg):
+    """Check for files that indicate a potential intrusion."""
+    conf = cfg.get("suspicious_files", {})
+    paths = conf.get("paths", ["/usr/bin/clean"])
+
+    results = []
+    found = []
+
+    for path in paths:
+        if _path_exists(path):
+            try:
+                info = {"path": path, "size": _path_getsize(path)}
+            except Exception:
+                info = {"path": path, "size": -1}
+            found.append(info)
+
+    if found:
+        names = ", ".join(f["path"] for f in found)
+        return [critical_result("suspicious_files",
+                "suspicious file(s) found: %s" % names,
+                metric_value=float(len(found)), metric_unit="count",
+                detail={"files": found})]
+    return [ok_result("suspicious_files", message="no suspicious files found")]
+
+
 # ---------------------------------------------------------------------------
 # Check runner
 # ---------------------------------------------------------------------------
@@ -1377,6 +1403,7 @@ CHECK_MAP = OrderedDict([
     ("firewall_errors", firewall_errors),
     ("kernel_messages", kernel_messages),
     ("raid_lvm", raid_lvm),
+    ("suspicious_files", suspicious_files),
 ])
 
 

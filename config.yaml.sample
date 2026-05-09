@@ -124,5 +124,10 @@ checks:
   raid_lvm:
     enabled: true
 
+  suspicious_files:
+    enabled: true
+    paths:
+      - /usr/bin/clean
+
 logging:
   level: info

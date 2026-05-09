@@ -57,7 +57,8 @@
     "nfs_mounts": { "enabled": true, "timeout_seconds": 5 },
     "firewall_errors": { "enabled": false },
     "kernel_messages": { "enabled": true, "max_lines": 5 },
-    "raid_lvm": { "enabled": true }
+    "raid_lvm": { "enabled": true },
+    "suspicious_files": { "enabled": true, "paths": ["/usr/bin/clean"] }
   },
   "logging": { "level": "info" }
 }
