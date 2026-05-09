@@ -15,6 +15,10 @@ git clone https://git.ustc.edu.cn/ustcnic/fault-agent
 
 支持 JSON 和 YAML 两种配置格式，选择其一即可：
 
+需要注意的是，YAML配置格式需要安装yaml的解析库，否则会自动改用 json 格式，如果json格式文件不存在，会用默认的配置。
+
+配置中的XXXXXX,YYYYYY是登录名，可以有多个。
+
 **JSON 格式：**
 ```
 cp config.json.sample config.json
