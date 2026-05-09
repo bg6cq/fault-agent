@@ -2,7 +2,7 @@
 
 Linux 主机故障监控 Agent，定期检查系统故障状态并上报到集中服务器。支持 JSON 和 YAML 两种配置文件格式。
 
-如果数据送到 https://noc.ustc.edu.cn/api/v1/reports，并设置了GID，可以登录到 https://noc.ustc.edu.cn/linux 查看
+如果数据送到 https://noc.ustc.edu.cn/api/v1/reports，并设置了GID(注意要设置为工号、学号，即登录时右上角显示的)，可以登录到 https://noc.ustc.edu.cn/linux 查看
 
 
 ## USTC 校内使用
