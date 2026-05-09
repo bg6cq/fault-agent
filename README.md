@@ -110,7 +110,7 @@ python3 fault-agent.py --config config.json --oneshot
 
 默认输出到 stderr（journald）。如需文件日志，重定向 crontab 输出。
 
-## 检查项（共 21 项）
+## 检查项（共 22 项）
 
 ### 系统资源
 | 检查项 | 命令/来源 | Warning | Critical |
@@ -152,6 +152,7 @@ python3 fault-agent.py --config config.json --oneshot
 |--------|-----------|---------|----------|
 | 证书过期 | `openssl x509` | <30 天 | <7 天或已过期 |
 | 内核错误 | `dmesg --level=err` | - | 检测到新 error |
+| 可疑文件 | `os.path.exists` | - | 发现可疑文件（如入侵后门） |
 
 ## 上报 JSON 结构
 
