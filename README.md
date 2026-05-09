@@ -42,6 +42,50 @@ python /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.
 crontab -e 改为定期运行
 ```
 
+## 常见系统错误的处理
+
+### kernel_messages 错误
+
+如果碰到如下的错误，可以用`dmesg -l err`查看错误信息，如果是误报或需要清除，可以执行`dmesg -C`清除dmesg记录。
+
+```
+{
+  "warn_count": 0,
+  "recent_errs": [],
+  "err_count": 139
+}
+```
+
+### zombie_processes 错误
+
+如果碰到一下错误，可以修改设置中zombie_processes部分，把阈值从1改为2或3。
+```
+{
+  "count": 1,
+  "zombies": [
+    {
+      "comm": "telnet <defunct>",
+      "pid": "13511"
+    }
+  ]
+}
+```
+
+### systemd_failures 错误
+
+如果碰到如下的错误，可以把信息去deepseek咨询，禁用该服务或解决。
+
+```
+{
+  "system_state": "degraded",
+  "failed_units": [
+    {
+      "load": "loaded",
+      "unit": "dnf-makecache.service"
+    }
+  ]
+}
+```
 
 
 ## 目录结构
