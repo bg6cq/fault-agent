@@ -29,7 +29,7 @@ git clone https://git.ustc.edu.cn/ustcnic/fault-agent.git
 **JSON 格式：**
 ```
 cp config.json.sample config.json
-vi config.json # 修改 hostname、sysinfo、url 注意 json中不能有任何注释
+vi config.json # 修改 hostname、sysinfo、url, 特别注意 json中不能有任何注释
 python /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.json --oneshot
 ```
 
@@ -42,9 +42,12 @@ python /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.
 
 后面的参数 --oneshot 的含义是运行并将输出显示，并未发给收集服务器。
 
-如果发给收集服务器，请不带 --oneshot 参数再运行。
+如果发给收集服务器，请不带 --oneshot 参数再运行:
+```
+python /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.json
+```
 
-如果正常，参考crontab.txt，根据自己的配置文件修改，设置
+这时，https://noc.ustc.edu.cn/linux 能看到信息，如果正常，参考crontab.txt，根据自己的配置文件修改，设置
 ```
 crontab -e 改为定期运行
 ```
