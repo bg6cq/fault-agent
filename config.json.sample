@@ -3,7 +3,7 @@
   "agent": {
     "hostname": "claw",
     "sysinfo": "192.168.8.21",
-    "tags": { "GID": "XXXXX,YYYYY", "group": "Web服务器" },   # GID: 访问控制; group: Web页面按组筛选
+    "tags": { "GID": "XXXXX,YYYYY", "group": "Web服务器" },
     "spool_dir": "/var/spool/fault-agent",
     "state_dir": "/var/lib/fault-agent"
   },
