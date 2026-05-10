@@ -1,1 +1,1 @@
-0 * * * * python /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.yaml 2> /dev/null
+0 * * * * python /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.json 2> /dev/null

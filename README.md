@@ -22,7 +22,7 @@ git clone https://git.ustc.edu.cn/ustcnic/fault-agent.git
 **JSON 格式：**
 ```
 cp config.json.sample config.json
-vi config.json # 修改 hostname、sysinfo、url 
+vi config.json # 修改 hostname、sysinfo、url 注意 json中不能有任何注释
 python /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.json --oneshot
 ```
 
