@@ -1679,8 +1679,7 @@ def print_report(report):
 def setup_logging(config):
     level_str = config.get("logging", {}).get("level", "info").upper()
     level = getattr(logging, level_str, logging.INFO)
-    logging.basicConfig(level=level, format="%(asctime)s [%(levelname)s] %(message)s",
-                        datefmt="%Y-%m-%dT%H:%M:%S")
+    logging.getLogger().setLevel(level)
 
 
 def main():
@@ -1690,6 +1689,10 @@ def main():
     parser.add_argument("--oneshot", action="store_true",
                         help="Run checks once and print report to stdout (no server send)")
     args = parser.parse_args()
+
+    # Set up basic logging before config loading (load_config may log warnings)
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s",
+                        datefmt="%Y-%m-%dT%H:%M:%S")
 
     config = load_config(args.config)
     setup_logging(config)
