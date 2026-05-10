@@ -2,7 +2,14 @@
 
 Linux 主机故障监控 Agent，定期检查系统故障状态并上报到集中服务器。支持 JSON 和 YAML 两种配置文件格式。
 
-如果数据送到 https://noc.ustc.edu.cn/api/v1/reports ，并设置了GID(注意要设置为工号、学号，即登录时右上角显示的)，可以登录到 https://noc.ustc.edu.cn/linux 查看
+如果数据送到 https://noc.ustc.edu.cn/api/v1/reports ，可以登录到 https://noc.ustc.edu.cn/linux 查看。
+
+## Group（组）与 Web 显示
+
+`tags` 支持以下字段用于 Web 页面显示和筛选：
+
+- **GID**：访问控制，填写工号或学号（即登录 https://noc.ustc.edu.cn 时右上角显示的用户名）。只有 GID 列表中包含的用户才能在 Web 页面看到该主机。多个 ID 用逗号分隔。未设置时主机对任何用户不可见。
+- **group**：分组标签，填写自定义组名（如 `"Web服务器"`、`"数据库"`、`"KVM"`）。Web 页面支持按组名筛选显示，方便管理大量主机。
 
 
 ## USTC 校内使用

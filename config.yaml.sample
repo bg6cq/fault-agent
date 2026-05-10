@@ -3,7 +3,7 @@
 agent:
   hostname: "claw"                            # 为空自动探测
   sysinfo: "192.168.8.21"                     # 直接显示
-  tags: {"GID": "XXXXX,YYYYY" }               # 限制谁可以在 https://noc.ustc.edu.cn/linux 看到, XXXX是工号或学号
+  tags: {"GID": "XXXXX,YYYYY", "group": "Web服务器" }  # GID: 访问控制，工号/学号; group: Web页面按组筛选显示
   spool_dir: /var/spool/fault-agent
   state_dir: /var/lib/fault-agent
 
