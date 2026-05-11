@@ -1156,10 +1156,12 @@ def read_only_fs(cfg):
         device = parts[0]
         mount = parts[2]
         opts = parts[5].lstrip("(").rstrip(")")
-        # Skip pseudo-filesystems
+        # Skip pseudo-filesystems and inherently read-only mounts
         if device in ("proc", "sysfs", "devtmpfs", "tmpfs") or device.startswith("systemd"):
             continue
         if mount.startswith("/sys") or mount.startswith("/proc") or mount == "/dev":
+            continue
+        if mount.startswith("/snap/") or mount.startswith("/run/credentials/"):
             continue
         if "ro" in opts.split(","):
             read_only_mounts.append({"device": device, "mount": mount, "options": opts})
