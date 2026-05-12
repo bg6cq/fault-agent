@@ -238,7 +238,7 @@ def _run_simple(cmd, timeout=30):
 # Constants
 # ---------------------------------------------------------------------------
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 DEFAULT_CONFIG_PATH = "/usr/src/fault-agent/config.json"
 DEFAULT_SPOOL_DIR = "/var/spool/fault-agent"
 DEFAULT_STATE_DIR = "/var/lib/fault-agent"
@@ -1303,21 +1303,52 @@ def raid_lvm(cfg):
     results = []
     detail = {}
 
-    # mdadm RAID check
+    # mdadm RAID check — parse /proc/mdstat properly
     mdstat_path = "/proc/mdstat"
     if _path_exists(mdstat_path):
         try:
             content = _read_file(mdstat_path)
             detail["mdstat"] = content.strip()
-            degraded = re.findall(r"(\w+)\s*:\s*active\s+\S+\s+(\S+\[[^U])", content)
-            failed = re.findall(r"(\w+)\s*:\s*active\s+\S+\s+\S+\[_", content)
-            if failed:
+            degraded_devs = []
+            failed_devs = []
+            # Parse md device lines, each followed by indented continuation lines
+            lines = content.splitlines()
+            i = 0
+            while i < len(lines):
+                # Skip Personalities, unused devices, empty lines
+                if not lines[i] or lines[i].startswith('Personalities') or lines[i].startswith('unused'):
+                    i += 1
+                    continue
+                m = re.match(r'^(\w+)\s*:\s*active\s+raid\S+\s+', lines[i])
+                if m:
+                    md_name = m.group(1)
+                    # Collect all indented continuation lines
+                    block = lines[i]
+                    i += 1
+                    while i < len(lines) and lines[i].startswith(' '):
+                        block += '\n' + lines[i]
+                        i += 1
+                    if '(F)' in block:
+                        failed_devs.append(md_name)
+                        continue
+                    # Status brackets: [N/M] [UUU...]
+                    # Degraded if N < M or status contains _
+                    status_m = re.search(r'\[(\d+)/(\d+)\]\s+\[([^\]]+)\]', block)
+                    if status_m:
+                        present = int(status_m.group(1))
+                        total = int(status_m.group(2))
+                        status_chars = status_m.group(3)
+                        if '_' in status_chars or present != total:
+                            degraded_devs.append(md_name)
+                else:
+                    i += 1
+            if failed_devs:
                 results.append(critical_result("raid_lvm",
-                               "RAID failed/degraded: %s" % ", ".join(f[0] for f in failed),
+                               "RAID failed: %s" % ", ".join(failed_devs),
                                detail=dict(detail)))
-            elif degraded:
+            elif degraded_devs:
                 results.append(critical_result("raid_lvm",
-                               "RAID degraded: %s" % ", ".join(d[0] for d in degraded),
+                               "RAID degraded: %s" % ", ".join(degraded_devs),
                                detail=dict(detail)))
         except Exception:
             pass
