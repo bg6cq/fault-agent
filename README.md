@@ -157,7 +157,7 @@ python3 fault-agent.py --config config.yaml --oneshot
 ### 3. 部署到 crontab
 
 ```cron
-0 * * * * /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.json
+0 * * * * /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.json 2> /dev/null
 ```
 
 ### 4. 查看日志
