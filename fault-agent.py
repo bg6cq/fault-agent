@@ -417,6 +417,8 @@ def inode_usage(cfg):
     conf = cfg.get("inode_usage", {})
     warn = conf.get("warning_pct", 80)
     crit = conf.get("critical_pct", 90)
+    exclude_fs = set(conf.get("exclude_fstypes", []))
+    exclude_mnt = set(conf.get("exclude_mounts", []))
 
     try:
         r = _run(["df", "-iP"])
@@ -428,9 +430,15 @@ def inode_usage(cfg):
 
     for line in r.stdout.splitlines()[1:]:
         parts = line.split()
-        if len(parts) < 6:
+        if len(parts) < 7:
             continue
+        fs = parts[0]
         mount = parts[5]
+        if fs in exclude_fs or mount in exclude_mnt:
+            continue
+        # 排除挂载点前缀匹配（如 /snap 匹配 /snap/core/xxx）
+        if any(mount.startswith(p + "/") for p in exclude_mnt):
+            continue
         try:
             pct = int(parts[4].rstrip("%"))
         except (ValueError, IndexError):

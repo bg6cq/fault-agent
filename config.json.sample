@@ -22,7 +22,13 @@
       "exclude_fstypes": ["tmpfs", "devtmpfs", "squashfs", "overlay", "efivarfs"],
       "exclude_mounts": ["/boot", "/boot/efi"]
     },
-    "inode_usage": { "enabled": true, "warning_pct": 80, "critical_pct": 90 },
+    "inode_usage": {
+	      "enabled": true,
+	      "warning_pct": 80,
+	      "critical_pct": 90,
+	      "exclude_fstypes": ["tmpfs", "devtmpfs", "squashfs", "overlay"],
+	      "exclude_mounts": ["/snap"]
+	    },
     "disk_io_errors": { "enabled": true },
     "memory_usage": { "enabled": true, "warning_pct": 90, "critical_pct": 95 },
     "oom_killer": { "enabled": true, "window_seconds": 300 },
