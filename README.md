@@ -29,14 +29,14 @@ git clone https://git.ustc.edu.cn/ustcnic/fault-agent.git
 **JSON 格式：**
 ```
 cp config.json.sample config.json
-vi config.json # 修改 hostname、sysinfo、url, 特别注意 json中不能有任何注释
+vi config.json # 修改 hostname、sysinfo、tags, 特别注意 json中不能有任何注释
 python /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.json --oneshot
 ```
 
 **YAML 格式：**
 ```
 cp config.yaml.sample config.yaml
-vi config.yaml # 修改 hostname、sysinfo、url
+vi config.yaml # 修改 hostname、sysinfo、tags
 python /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.yaml --oneshot
 ```
 
