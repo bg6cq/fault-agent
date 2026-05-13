@@ -147,9 +147,9 @@ JSON 格式（`config.json`）：
 ### 2. 手动运行测试
 
 ```bash
-python3 fault-agent.py --config config.yaml --oneshot
-# 或
 python3 fault-agent.py --config config.json --oneshot
+# 或
+python3 fault-agent.py --config config.yaml --oneshot
 ```
 
 `--oneshot` 模式将检查结果打印到 stdout 而非发送到服务器。
@@ -157,7 +157,7 @@ python3 fault-agent.py --config config.json --oneshot
 ### 3. 部署到 crontab
 
 ```cron
-*/2 * * * * /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.yaml
+0 * * * * /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.json
 ```
 
 ### 4. 查看日志
