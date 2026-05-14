@@ -1710,8 +1710,8 @@ def replay_spool(config):
 # ---------------------------------------------------------------------------
 
 def _print_problem_summary(report):
-    """Print all non-ok results to stderr for at-a-glance debugging."""
-    results = report.get("results", [])
+    """Print all non-ok results to stdout for at-a-glance debugging."""
+    results = report.get("checks", [])
     problems = [r for r in results if r.get("status") != STATUS_OK]
     if not problems:
         return
@@ -1783,7 +1783,7 @@ def main():
     log.info("summary: %d ok, %d warning, %d critical, %d error",
              summary["ok"], summary["warning"], summary["critical"], summary["error"])
 
-    # Phase 4: Print problem summary for debugging (stderr, always on)
+    # Phase 4: Print problem summary for debugging (always on)
     _print_problem_summary(report)
 
     # Phase 5: Output / send
