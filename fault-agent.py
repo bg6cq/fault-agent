@@ -1706,10 +1706,35 @@ def replay_spool(config):
 
 
 # ---------------------------------------------------------------------------
-# Oneshot mode (print report to stdout for debugging)
+# Human-readable problem summary (stderr) + JSON output (stdout)
 # ---------------------------------------------------------------------------
 
+def _print_problem_summary(report):
+    """Print all non-ok results to stderr for at-a-glance debugging."""
+    results = report.get("results", [])
+    problems = [r for r in results if r.get("status") != STATUS_OK]
+    if not problems:
+        return
+    print("\n=== Fault Check Report ===")
+    for r in problems:
+        status = r.get("status", "?").upper()
+        name = r.get("check_name", "?")
+        msg = r.get("message", "")
+        metric = r.get("metric_value")
+        unit = r.get("metric_unit", "")
+        threshold = r.get("threshold")
+        extra = ""
+        if metric is not None:
+            extra = " [%s%s" % (metric, unit)
+            if threshold is not None:
+                extra += " / threshold: %s" % threshold
+            extra += "]"
+        print("  %-8s %-30s %s%s" % (status, name, msg, extra))
+    print("==========================\n")
+
+
 def print_report(report):
+    _print_problem_summary(report)
     print(json.dumps(report, indent=2))
 
 
@@ -1758,7 +1783,10 @@ def main():
     log.info("summary: %d ok, %d warning, %d critical, %d error",
              summary["ok"], summary["warning"], summary["critical"], summary["error"])
 
-    # Phase 4: Output / send
+    # Phase 4: Print problem summary for debugging (stderr, always on)
+    _print_problem_summary(report)
+
+    # Phase 5: Output / send
     if args.oneshot:
         print_report(report)
     else:
