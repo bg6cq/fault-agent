@@ -238,7 +238,7 @@ def _run_simple(cmd, timeout=30):
 # Constants
 # ---------------------------------------------------------------------------
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 DEFAULT_CONFIG_PATH = "/usr/src/fault-agent/config.json"
 DEFAULT_SPOOL_DIR = "/var/spool/fault-agent"
 DEFAULT_STATE_DIR = "/var/lib/fault-agent"
