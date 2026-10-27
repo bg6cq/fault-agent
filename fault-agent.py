@@ -1155,9 +1155,14 @@ def read_only_fs(cfg):
             continue
         device = parts[0]
         mount = parts[2]
+        fstype = parts[4]
         opts = parts[5].lstrip("(").rstrip(")")
-        # Skip pseudo-filesystems
+        # Skip pseudo-filesystems: RAM-backed or kernel pseudo filesystems
+        # are never "writable fs remounted read-only" fault signals (e.g.
+        # systemd mounts tmpfs as ro for unit credentials under /run/credentials).
         if device in ("proc", "sysfs", "devtmpfs", "tmpfs") or device.startswith("systemd"):
+            continue
+        if fstype in ("tmpfs", "devtmpfs", "proc", "sysfs", "ramfs"):
             continue
         if mount.startswith("/sys") or mount.startswith("/proc") or mount == "/dev":
             continue
