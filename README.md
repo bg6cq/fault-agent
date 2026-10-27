@@ -8,7 +8,7 @@ Linux 主机故障监控 Agent，定期检查系统故障状态并上报到集�
 
 `tags` 支持以下字段用于 Web 页面显示和筛选：
 
-- **GID**：访问控制，填写工号或学号（即登录 https://noc.ustc.edu.cn 时右上角显示的用户名）。只有 GID 列表中包含的用户才能在 Web 页面看到该主机。多个 ID 用逗号分隔。未设置时主机对任何用户不可见。
+- **GID**：访问控制，填写工号或学号（即登录 https://noc.ustc.edu.cn/linux 时右上角显示的用户名）。只有 GID 列表中包含的用户才能在 Web 页面看到该主机。多个 ID 用逗号分隔。未设置时主机对任何用户不可见。
 - **group**：分组标签，填写自定义组名（如 `"Web服务器"`、`"数据库"`、`"KVM"`）。Web 页面支持按组名筛选显示，方便管理大量主机。
 
 
@@ -29,14 +29,14 @@ git clone https://git.ustc.edu.cn/ustcnic/fault-agent.git
 **JSON 格式：**
 ```
 cp config.json.sample config.json
-vi config.json # 修改 hostname、sysinfo、url, 特别注意 json中不能有任何注释
+vi config.json # 修改 hostname、sysinfo、tags, 特别注意 json中不能有任何注释
 python /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.json --oneshot
 ```
 
 **YAML 格式：**
 ```
 cp config.yaml.sample config.yaml
-vi config.yaml # 修改 hostname、sysinfo、url
+vi config.yaml # 修改 hostname、sysinfo、tags
 python /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.yaml --oneshot
 ```
 
@@ -147,9 +147,9 @@ JSON 格式（`config.json`）：
 ### 2. 手动运行测试
 
 ```bash
-python3 fault-agent.py --config config.yaml --oneshot
-# 或
 python3 fault-agent.py --config config.json --oneshot
+# 或
+python3 fault-agent.py --config config.yaml --oneshot
 ```
 
 `--oneshot` 模式将检查结果打印到 stdout 而非发送到服务器。
@@ -157,7 +157,7 @@ python3 fault-agent.py --config config.json --oneshot
 ### 3. 部署到 crontab
 
 ```cron
-*/2 * * * * /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.yaml
+0 * * * * /usr/src/fault-agent/fault-agent.py --config /usr/src/fault-agent/config.json 2> /dev/null
 ```
 
 ### 4. 查看日志

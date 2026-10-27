@@ -33,6 +33,13 @@ checks:
     enabled: true
     warning_pct: 80
     critical_pct: 90
+    exclude_fstypes:
+      - tmpfs
+      - devtmpfs
+      - squashfs
+      - overlay
+    exclude_mounts:
+      - /snap
 
   disk_io_errors:
     enabled: true

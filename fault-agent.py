@@ -238,7 +238,7 @@ def _run_simple(cmd, timeout=30):
 # Constants
 # ---------------------------------------------------------------------------
 
-VERSION = "1.0.0"
+VERSION = "1.0.2"
 DEFAULT_CONFIG_PATH = "/usr/src/fault-agent/config.json"
 DEFAULT_SPOOL_DIR = "/var/spool/fault-agent"
 DEFAULT_STATE_DIR = "/var/lib/fault-agent"
@@ -417,6 +417,8 @@ def inode_usage(cfg):
     conf = cfg.get("inode_usage", {})
     warn = conf.get("warning_pct", 80)
     crit = conf.get("critical_pct", 90)
+    exclude_fs = set(conf.get("exclude_fstypes", []))
+    exclude_mnt = set(conf.get("exclude_mounts", []))
 
     try:
         r = _run(["df", "-iP"])
@@ -428,9 +430,15 @@ def inode_usage(cfg):
 
     for line in r.stdout.splitlines()[1:]:
         parts = line.split()
-        if len(parts) < 6:
+        if len(parts) < 7:
             continue
+        fs = parts[0]
         mount = parts[5]
+        if fs in exclude_fs or mount in exclude_mnt:
+            continue
+        # 排除挂载点前缀匹配（如 /snap 匹配 /snap/core/xxx）
+        if any(mount.startswith(p + "/") for p in exclude_mnt):
+            continue
         try:
             pct = int(parts[4].rstrip("%"))
         except (ValueError, IndexError):
@@ -1166,6 +1174,8 @@ def read_only_fs(cfg):
             continue
         if mount.startswith("/sys") or mount.startswith("/proc") or mount == "/dev":
             continue
+        if mount.startswith("/snap/") or mount.startswith("/run/credentials/"):
+            continue
         if "ro" in opts.split(","):
             read_only_mounts.append({"device": device, "mount": mount, "options": opts})
 
@@ -1306,21 +1316,52 @@ def raid_lvm(cfg):
     results = []
     detail = {}
 
-    # mdadm RAID check
+    # mdadm RAID check — parse /proc/mdstat properly
     mdstat_path = "/proc/mdstat"
     if _path_exists(mdstat_path):
         try:
             content = _read_file(mdstat_path)
             detail["mdstat"] = content.strip()
-            degraded = re.findall(r"(\w+)\s*:\s*active\s+\S+\s+(\S+\[[^U])", content)
-            failed = re.findall(r"(\w+)\s*:\s*active\s+\S+\s+\S+\[_", content)
-            if failed:
+            degraded_devs = []
+            failed_devs = []
+            # Parse md device lines, each followed by indented continuation lines
+            lines = content.splitlines()
+            i = 0
+            while i < len(lines):
+                # Skip Personalities, unused devices, empty lines
+                if not lines[i] or lines[i].startswith('Personalities') or lines[i].startswith('unused'):
+                    i += 1
+                    continue
+                m = re.match(r'^(\w+)\s*:\s*active\s+raid\S+\s+', lines[i])
+                if m:
+                    md_name = m.group(1)
+                    # Collect all indented continuation lines
+                    block = lines[i]
+                    i += 1
+                    while i < len(lines) and lines[i].startswith(' '):
+                        block += '\n' + lines[i]
+                        i += 1
+                    if '(F)' in block:
+                        failed_devs.append(md_name)
+                        continue
+                    # Status brackets: [N/M] [UUU...]
+                    # Degraded if N < M or status contains _
+                    status_m = re.search(r'\[(\d+)/(\d+)\]\s+\[([^\]]+)\]', block)
+                    if status_m:
+                        present = int(status_m.group(1))
+                        total = int(status_m.group(2))
+                        status_chars = status_m.group(3)
+                        if '_' in status_chars or present != total:
+                            degraded_devs.append(md_name)
+                else:
+                    i += 1
+            if failed_devs:
                 results.append(critical_result("raid_lvm",
-                               "RAID failed/degraded: %s" % ", ".join(f[0] for f in failed),
+                               "RAID failed: %s" % ", ".join(failed_devs),
                                detail=dict(detail)))
-            elif degraded:
+            elif degraded_devs:
                 results.append(critical_result("raid_lvm",
-                               "RAID degraded: %s" % ", ".join(d[0] for d in degraded),
+                               "RAID degraded: %s" % ", ".join(degraded_devs),
                                detail=dict(detail)))
         except Exception:
             pass
@@ -1670,10 +1711,35 @@ def replay_spool(config):
 
 
 # ---------------------------------------------------------------------------
-# Oneshot mode (print report to stdout for debugging)
+# Human-readable problem summary (stderr) + JSON output (stdout)
 # ---------------------------------------------------------------------------
 
+def _print_problem_summary(report):
+    """Print all non-ok results to stdout for at-a-glance debugging."""
+    results = report.get("checks", [])
+    problems = [r for r in results if r.get("status") != STATUS_OK]
+    if not problems:
+        return
+    print("\n=== Fault Check Report ===")
+    for r in problems:
+        status = r.get("status", "?").upper()
+        name = r.get("check_name", "?")
+        msg = r.get("message", "")
+        metric = r.get("metric_value")
+        unit = r.get("metric_unit", "")
+        threshold = r.get("threshold")
+        extra = ""
+        if metric is not None:
+            extra = " [%s%s" % (metric, unit)
+            if threshold is not None:
+                extra += " / threshold: %s" % threshold
+            extra += "]"
+        print("  %-8s %-30s %s%s" % (status, name, msg, extra))
+    print("==========================\n")
+
+
 def print_report(report):
+    _print_problem_summary(report)
     print(json.dumps(report, indent=2))
 
 
@@ -1722,7 +1788,10 @@ def main():
     log.info("summary: %d ok, %d warning, %d critical, %d error",
              summary["ok"], summary["warning"], summary["critical"], summary["error"])
 
-    # Phase 4: Output / send
+    # Phase 4: Print problem summary for debugging (always on)
+    _print_problem_summary(report)
+
+    # Phase 5: Output / send
     if args.oneshot:
         print_report(report)
     else:
